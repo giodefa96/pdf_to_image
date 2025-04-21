@@ -1,0 +1,81 @@
+[tool.poe.env]
+IMAGE_NAME = "frontend"
+IMAGE_VERSION = "0.0.1"
+DOCKER_REGISTRY = "giodefa996"
+
+[tool.poe.tasks.lint]
+help = "Lint this package"
+
+cmd = """
+      pre-commit run
+      --all-files
+      --color always
+      """
+
+[tool.poe.tasks.test]
+help = "Run tests and coverage"
+
+cmd = """
+      pytest
+      --cov=src
+      --cov-report=html
+      --disable-pytest-warnings
+      """
+
+[tool.poe.tasks.bump]
+help = "Bump package version through committizen"
+
+shell = """
+        OLD_VERSION="$(cz version -- project)"
+        cz bump --files-only --increment ${INCREMENT:-PATCH}
+        NEW_VERSION="$(cz version -- project)"
+        uv lock
+        git add .
+        git commit -m "chore: bump version from $OLD_VERSION to $NEW_VERSION"
+        git tag -a "$NEW_VERSION" -m "Version $NEW_VERSION"
+      """
+
+[tool.poe.tasks.update-pre-commit]
+help = "Update pre-commit packages"
+cmd = """
+        pre-commit autoupdate
+    """
+
+[tool.poe.tasks.run-app]
+help = "Run FastAPI app"
+
+cmd = """
+        uv run streamlit run src/app.py
+    """
+
+[tool.poe.tasks.install-build]
+help = "Install build dependencies"
+cmd = "uv pip install --upgrade build"
+
+[tool.poe.tasks.build]
+help = "Build package using setuptools as defined in pyproject.toml"
+cmd = "uv run -m build"
+deps = ["install-build"]
+
+[tool.poe.tasks.docker-build]
+help = "Build Docker image with multiple tags"
+cmd = 'docker build -t "${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}" -f docker/Dockerfile .'
+deps = ["build"]
+
+[tool.poe.tasks.docker-push]
+help = "Push Docker image to Docker Hub"
+sequence = [
+    { cmd = "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}" }
+]
+
+[tool.poe.tasks.docker-run]
+help = "Run Docker container"
+cmd = """
+      docker run -p 8501:8501 ${IMAGE_NAME}:${IMAGE_VERSION}
+      """
+
+[tool.poe.tasks.docker-clean]
+help = "Clean up Docker resources (remove all unused containers, networks, images and volumes)"
+cmd = """
+      docker system prune -a -f
+      """

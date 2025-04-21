@@ -1,0 +1,29 @@
+FROM python:3.12-alpine
+
+ARG USERNAME=python
+ARG PACKAGE_NAME=frontend
+ARG VERSION=0.0.1
+
+USER root
+RUN apk update && apk upgrade
+
+RUN addgroup -S ${USERNAME} && \
+    adduser -S ${USERNAME} -G ${USERNAME}
+
+WORKDIR /home/${USERNAME}/agent
+RUN chmod -R 777 /home/${USERNAME}/agent
+
+COPY dist/ /home/${USERNAME}/agent/dist
+
+RUN pip install --extra-index-url https://pypi.fury.io/arrow-nightlies/ \
+    --prefer-binary --pre pyarrow
+
+RUN pip install /home/${USERNAME}/agent/dist/${PACKAGE_NAME}-${VERSION}*.whl
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH="${PYTHONPATH}:/home/${USERNAME}/agent:/home/${USERNAME}/agent/src"
+
+EXPOSE 8501
+USER ${USERNAME}
+ENTRYPOINT ["streamlit", "run"]
+CMD ["/usr/local/lib/python3.12/site-packages/src/app.py"]

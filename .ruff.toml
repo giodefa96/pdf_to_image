@@ -1,0 +1,113 @@
+line-length = 120
+target-version = "py312"
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "COM812",
+    "D",
+    "ISC001",
+    "PGH003",
+    "FA102",
+    "SIM108",
+    "TRY",
+    "EM",
+    "TD",
+    "FIX"
+]
+
+[lint.isort]
+force-single-line = true
+
+[lint.per-file-ignores]
+"tests/*" = [
+    "S",
+    "ANN",
+    "PT",
+    "RET",
+    "C408",
+    "PTH123",
+    "ERA001",
+    "E501"
+]
+"src/*" = [
+    "C408",
+    "G004",
+    "DTZ005",
+    "PTH123",
+    "ERA001",
+    "DTZ007",
+    "E501",
+    "N818",
+    "BLE001",
+    "B008",
+    "FAST002",
+    "ARG001",
+    "ANN204",
+    "ARG001",
+    "S104",
+]
+"frontend/*" = [
+    "C408",
+    "G004",
+    "DTZ005",
+    "PTH123",
+    "ERA001",
+    "DTZ007",
+    "E501",
+    "N818",
+    "BLE001",
+    "B008",
+    "FAST002",
+    "ARG001",
+    "ANN204",
+    "ARG001",
+    "S104",
+    "PLR2004",
+    "S113",
+    "ANN001",
+    "PTH118",
+]
+"backend/*" = [
+    "C408",
+    "G004",
+    "DTZ005",
+    "PTH123",
+    "ERA001",
+    "DTZ007",
+    "E501",
+    "N818",
+    "BLE001",
+    "B008",
+    "FAST002",
+    "ARG001",
+    "ANN204",
+    "ARG001",
+    "S104",
+]
+"stress_test/*" = [
+    "C408",
+    "G004",
+    "DTZ005",
+    "PTH123",
+    "ERA001",
+    "DTZ007",
+    "E501",
+    "N818",
+    "BLE001",
+    "B008",
+    "FAST002",
+    "ARG001",
+    "ANN204",
+    "ARG001",
+    "S104",
+    "PLR2004",
+    "RSE102",
+    "B904",
+    "PTH110",
+    "PTH120",
+    "PTH118",
+    "PLR2004",
+]
+[lint.pylint]
+max-args = 10
