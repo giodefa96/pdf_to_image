@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: giodefa996/frontend:0.0.1
+    image: giodefa996/frontend:0.0.2
     container_name: frontend-app
     ports:
       - "8501:8501"
