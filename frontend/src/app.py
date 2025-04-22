@@ -78,13 +78,11 @@ with st.container():
         processing_placeholder = st.empty()
         status_placeholder = st.empty()
         result_placeholder = st.empty()
-
-        st.markdown("---")
-        st.markdown("### 🔄 Processing document")
+        
+        filename = uploaded_file.name
 
         with processing_placeholder:
             st.markdown("### 🔄 Processing document")
-            filename = uploaded_file.name
             st.write(f"Uploaded file: **{filename}** ")
 
         response = convert_pdf_to_image(uploaded_file)
@@ -121,6 +119,7 @@ with st.container():
                     unsafe_allow_html=True,
                 )
             if "filename" in response:
+                filename = response["filename"]
                 response = get_content_from_blob(response["filename"])
             else:
                 st.error("⚠️ Error: filename missing in response.")
@@ -132,7 +131,6 @@ with st.container():
             status_placeholder.empty()
 
         if isinstance(response, list) and len(response) > 0:
-            with result_placeholder:
                 st.markdown("---")
                 st.markdown(f"### 🖼️ Conversion results ({len(response)} pages)")
 
@@ -147,12 +145,12 @@ with st.container():
                 zip_buffer.seek(0)
                 st.markdown('<div class="download-all-btn">', unsafe_allow_html=True)
                 st.download_button(
-                    label="📦 Download all pages (ZIP)",
-                    data=zip_buffer,
-                    file_name=f"{filename.split('.')[0]}_images.zip",
-                    mime="application/zip",
-                    use_container_width=True,
-                )
+                label="📦 Download all pages (ZIP)",
+                data=zip_buffer,
+                file_name=f"{filename.split('.')[0]}_images.zip" if filename else "images.zip",
+                mime="application/zip",
+                use_container_width=True,
+            )
                 st.markdown("</div>", unsafe_allow_html=True)
 
                 tabs = st.tabs([f"Page {img['page']}" for img in response])
