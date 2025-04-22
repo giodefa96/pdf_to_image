@@ -31,6 +31,7 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
       - AZURE_STORAGE_CONTAINER_NAME=${AZURE_STORAGE_CONTAINER_NAME}
+      - PDF_BATCH_SIZE=${PDF_BATCH_SIZE}
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
