@@ -1,15 +1,16 @@
+from unittest.mock import AsyncMock
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import pytest
-import logging
-from unittest.mock import patch, MagicMock, AsyncMock
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from src.app import create_app
+from src.app import lifespan
 
-from src.db.database import db
-from src.utils.blob_storage import AzureBlobManager
-from src.app import create_app, lifespan
-
-from dotenv import load_dotenv
 load_dotenv(override=True)
+
 
 @pytest.fixture
 def app():
@@ -38,22 +39,22 @@ class TestAppCreation:
 
 @pytest.mark.asyncio
 class TestLifespan:
-    @patch('src.app.blob_storage', new_callable=AsyncMock)
-    @patch('src.app.db')  
+    @patch("src.app.blob_storage", new_callable=AsyncMock)
+    @patch("src.app.db")
     async def test_lifespan_success_flow(self, mock_db, mock_blob_storage):
         """Test the successful flow of the lifespan function."""
         mock_app = MagicMock()
         mock_db.initialize = AsyncMock()
         mock_db.create_tables = AsyncMock()
         mock_db.close = AsyncMock()
-        
+
         mock_blob_storage.initialize.return_value = True
-        
+
         async with lifespan(mock_app):
             pass
-        
+
         mock_db.initialize.assert_called_once()
         mock_db.create_tables.assert_called_once()
         mock_blob_storage.initialize.assert_called_once()
         mock_db.close.assert_called_once()
-        assert hasattr(mock_app.state, 'blob_storage')
+        assert hasattr(mock_app.state, "blob_storage")
