@@ -15,11 +15,16 @@ server {
     client_max_body_size 100M;
 
     # SSL configuration
-    ssl_certificate /etc/nginx/certs/cert.pem;
-    ssl_certificate_key /etc/nginx/certs/key.pem;
+    ssl_certificate /etc/nginx/certs/nginx-server.crt;
+    ssl_certificate_key /etc/nginx/certs/nginx-server.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
     ssl_ciphers 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+
+    # Configurazione mTLS
+    ssl_verify_client on;
+    ssl_client_certificate /etc/nginx/certs/ca.crt; 
+    ssl_verify_depth 1;
 
     # Proxy settings for FastAPI backend
     location / {

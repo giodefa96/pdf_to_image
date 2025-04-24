@@ -1,0 +1,9 @@
+[browser]
+serverAddress = "localhost"
+
+[server]
+port = 8501
+enableCORS = true
+enableXsrfProtection = true
+sslCertFile = "/usr/local/lib/python3.12/site-packages/src/certs/client.crt"
+sslKeyFile = "/usr/local/lib/python3.12/site-packages/src/certs/client.key"

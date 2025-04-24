@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: giodefa996/frontend:0.0.2
+    image: giodefa996/frontend:0.0.3
     container_name: frontend-app
     ports:
       - "8501:8501"
@@ -11,10 +11,16 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./certs/cert.pem:/usr/local/lib/python3.12/site-packages/src/certs/cert.pem:ro
+      - ./certs/ca.crt:/usr/local/lib/python3.12/site-packages/src/certs/ca.crt:ro
+      - ./certs/streamlit-client.crt:/usr/local/lib/python3.12/site-packages/src/certs/client.crt:ro
+      - ./certs/streamlit-client.key:/usr/local/lib/python3.12/site-packages/src/certs/client.key:ro
+      - ./.streamlit/config.toml:/usr/local/lib/python3.12/site-packages/.streamlit/config.toml:ro
     environment:
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
       - CERT_FILE_PATH=${CERT_FILE_PATH}
+      - PATH_CRT=${PATH_CRT}
+      - PATH_CRT_KEY=${PATH_CRT_KEY}
+      - API_HOST=${API_HOST}
   backend:
     image: giodefa996/backend:0.0.1
     container_name: backend-api
