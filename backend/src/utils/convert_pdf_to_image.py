@@ -4,6 +4,7 @@ import os
 from io import BytesIO
 
 from pdf2image import convert_from_bytes
+from pdf2image.pdf2image import pdfinfo_from_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +19,6 @@ def convert_pdf_to_images(pdf_bytes: bytes, batch_size: int = 10) -> list[dict[s
             batch_size = int(env_batch_size)
         except ValueError:
             logger.warning("Invalid PDF_BATCH_SIZE env value: %s, using default %s", env_batch_size, batch_size)
-
-    from pdf2image.pdf2image import pdfinfo_from_bytes
 
     info = pdfinfo_from_bytes(pdf_bytes)
     num_pages = info["Pages"]
