@@ -30,7 +30,6 @@ class PdfRepository:
                 host_name=pdf_blob_response.host_name,
             )
             session.add(pdf_document)
-            await session.commit()
             return pdf_document
 
     async def get_pdf_blob_storage_url_by_hash(self, hash_id: str) -> PdfResponse:
