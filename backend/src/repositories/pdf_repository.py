@@ -22,7 +22,7 @@ class PdfRepository:
         Returns:
             Optional[PdfDocument]: The saved PDF document object.
         """
-        async with db.get_session() as session:
+        async with db.transaction() as session:
             pdf_document = PdfDocument(
                 hash_id=pdf_blob_response.blob_name,
                 blob_url=pdf_blob_response.blob_url,
