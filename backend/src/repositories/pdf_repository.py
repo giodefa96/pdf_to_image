@@ -1,4 +1,5 @@
 import json
+import logging
 
 from sqlalchemy import select
 from src.models.db.pdf_document import PdfDocument
@@ -7,6 +8,7 @@ from src.models.pydantic.response_model import PdfResponse
 from src.utils.blob_storage import AzureBlobManager
 from src.db.database import Database
 
+logger = logging.getLogger(__name__)
 
 class PdfRepository:
     def __init__(self, blob_storage: AzureBlobManager, db: Database) -> None:
@@ -23,6 +25,7 @@ class PdfRepository:
         Returns:
             Optional[PdfDocument]: The saved PDF document object.
         """
+        logging.info("Saving PDF document hash to the database.")
         async with self.db.transaction() as session:
             pdf_document = PdfDocument(
                 hash_id=pdf_blob_response.blob_name,
@@ -43,6 +46,7 @@ class PdfRepository:
         Returns:
             PdfResponse: Response object containing the document data or error information.
         """
+        logging.info("Retrieving PDF document from the database.")
         async with self.db.get_session() as session:
             result = await session.execute(select(PdfDocument).where(PdfDocument.hash_id == hash_id))
             pdf_document = result.scalars().first()
@@ -60,6 +64,7 @@ class PdfRepository:
         Returns:
             List[Dict[str, str]]: The parsed JSON data from the blob.
         """
+        logging.info("Retrieving image from blob storage.")
         blob_response = await self.blob_storage.get_file(blob_url)
         return json.loads(blob_response)
 
@@ -74,5 +79,6 @@ class PdfRepository:
         Returns:
             PdfBlobResponse: Response object containing information about the saved blob.
         """
+        logging.info("Saving image data to blob storage.")
         json_dumped = json.dumps(image_data).encode("utf-8")
         return await self.blob_storage.upload_file(json_dumped, blob_name)

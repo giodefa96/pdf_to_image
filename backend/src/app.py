@@ -9,8 +9,8 @@ from src.dependencies import setup_logging
 from src.routers import pdf_router
 from src.utils.blob_storage import AzureBlobManager
 
-
-logger = logging.getLogger()
+setup_logging()
+logger = logging.getLogger(__name__)
 blob_storage = AzureBlobManager()
 db = Database()
 
@@ -53,7 +53,6 @@ def create_app() -> FastAPI:
         FastAPI: Configured FastAPI application instance.
     """
 
-    setup_logging()
 
     app = FastAPI(title="FastAPI Template", version="0.0.1", lifespan=lifespan)
 

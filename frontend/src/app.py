@@ -9,6 +9,7 @@ from src.api.fe_api_pdf import convert_pdf_to_image
 from src.api.fe_api_pdf import get_status
 from src.utils.blob_storage import get_content_from_blob
 
+
 st.set_page_config(page_title="PDF Converter App", page_icon="📄", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown(

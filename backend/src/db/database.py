@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
 
+from src.config import Settings
+
 logger = logging.getLogger(__name__)
 
 # Base model definition
@@ -18,11 +20,11 @@ Base = declarative_base()
 class Database:
     def __init__(self) -> None:
         """Initialize the database connection parameters"""
-        postgres_host = os.getenv("POSTGRES_HOST")
-        postgres_port = os.getenv("POSTGRES_PORT")
-        postgres_user = os.getenv("POSTGRES_USER")
-        postgres_password = os.getenv("POSTGRES_PASSWORD")
-        postgres_db = os.getenv("POSTGRES_DB")
+        postgres_host = Settings.POSTGRES_HOST
+        postgres_port = Settings.POSTGRES_PORT
+        postgres_user = Settings.POSTGRES_USER
+        postgres_password = Settings.POSTGRES_PASSWORD
+        postgres_db = Settings.POSTGRES_DB
         self.database_url = (
             f"postgresql+asyncpg://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}"
         )

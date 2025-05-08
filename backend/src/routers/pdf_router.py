@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from src.dependencies import get_pdf_service
 from src.services.pdf_service import PdfService
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["PDF"])
 
@@ -35,7 +35,7 @@ async def health_check(request: Request) -> JSONResponse:
     Returns:
         JSONResponse: A JSON response indicating the service is running.
     """
-    logger.info("Health check endpoint called.")
+    logger.debug("Health check endpoint called.")
     return JSONResponse(content={"status": "ok"}, status_code=200)
 
 
