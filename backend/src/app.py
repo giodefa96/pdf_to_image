@@ -4,13 +4,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from src.db.database import db
+from src.db.database import Database
 from src.dependencies import setup_logging
 from src.routers import pdf_router
 from src.utils.blob_storage import AzureBlobManager
 
+
 logger = logging.getLogger()
 blob_storage = AzureBlobManager()
+db = Database()
 
 
 @asynccontextmanager
@@ -34,6 +36,7 @@ async def lifespan(app: FastAPI) -> None:
     if success:
         logger.info("Azure Blob Storage initialized during application startup")
         app.state.blob_storage = blob_storage
+        app.state.db = db
     else:
         logger.warning("Azure Blob Storage initialization failed")
     yield

@@ -1,16 +1,17 @@
 import json
 
 from sqlalchemy import select
-from src.db.database import db
 from src.models.db.pdf_document import PdfDocument
 from src.models.pydantic.response_model import PdfBlobResponse
 from src.models.pydantic.response_model import PdfResponse
 from src.utils.blob_storage import AzureBlobManager
+from src.db.database import Database
 
 
 class PdfRepository:
-    def __init__(self, blob_storage: AzureBlobManager) -> None:
+    def __init__(self, blob_storage: AzureBlobManager, db: Database) -> None:
         self.blob_storage = blob_storage
+        self.db = db
 
     async def save_pdf_document_hash(self, pdf_blob_response: PdfBlobResponse) -> PdfDocument | None:
         """
@@ -22,7 +23,7 @@ class PdfRepository:
         Returns:
             Optional[PdfDocument]: The saved PDF document object.
         """
-        async with db.transaction() as session:
+        async with self.db.transaction() as session:
             pdf_document = PdfDocument(
                 hash_id=pdf_blob_response.blob_name,
                 blob_url=pdf_blob_response.blob_url,
@@ -42,7 +43,7 @@ class PdfRepository:
         Returns:
             PdfResponse: Response object containing the document data or error information.
         """
-        async with db.get_session() as session:
+        async with self.db.get_session() as session:
             result = await session.execute(select(PdfDocument).where(PdfDocument.hash_id == hash_id))
             pdf_document = result.scalars().first()
             if pdf_document:

@@ -74,13 +74,3 @@ class Database:
         async with self.get_session() as session, session.begin():
             yield session
 
-
-# Create a singleton database instance
-db = Database()
-
-
-# Dependency for FastAPI
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """Dependency that provides a database session"""
-    async with db.get_session() as session:
-        yield session
