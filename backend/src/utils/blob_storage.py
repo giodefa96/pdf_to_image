@@ -1,11 +1,9 @@
 import logging
-import os
 
 from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob.aio import BlobServiceClient
-
-from src.models.pydantic.response_model import PdfBlobResponse
 from src.config import Settings
+from src.models.pydantic.response_model import PdfBlobResponse
 
 logger = logging.getLogger(__name__)
 

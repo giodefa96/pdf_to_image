@@ -10,10 +10,20 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "src.app:instance",
-                "--reload"
+                "src.app:instance"
             ],
-            "jinja": true
+            "jinja": true,
+            "python": "${workspaceFolder}/backend/.venv/bin/python" 
+        },
+        {
+            "name": "FastAPI App",
+            "type": "python",
+            "request": "launch",
+            "module": "src.main",
+            "cwd": "${workspaceFolder}/backend",
+            "envFile": "${workspaceFolder}/backend/.env",
+            "justMyCode": true,
+            "python": "${workspaceFolder}/backend/.venv/bin/python",
         },
         {
             "name": "Python: Streamlit",

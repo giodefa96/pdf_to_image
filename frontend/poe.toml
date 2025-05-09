@@ -1,6 +1,6 @@
 [tool.poe.env]
 IMAGE_NAME = "frontend"
-IMAGE_VERSION = "0.0.2"
+IMAGE_VERSION = "0.0.4"
 DOCKER_REGISTRY = "giodefa996"
 
 [tool.poe.tasks.lint]

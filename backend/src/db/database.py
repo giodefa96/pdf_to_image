@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -8,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import declarative_base
-
 from src.config import Settings
 
 logger = logging.getLogger(__name__)
@@ -75,4 +73,3 @@ class Database:
         """Context manager to get a session with an active transaction"""
         async with self.get_session() as session, session.begin():
             yield session
-

@@ -53,7 +53,6 @@ def create_app() -> FastAPI:
         FastAPI: Configured FastAPI application instance.
     """
 
-
     app = FastAPI(title="FastAPI Template", version="0.0.1", lifespan=lifespan)
 
     # Configure CORS middleware

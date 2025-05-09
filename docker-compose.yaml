@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    image: giodefa996/frontend:0.0.2
+    image: giodefa996/frontend:0.0.4
     container_name: frontend-app
     ports:
       - "8501:8501"
@@ -11,15 +11,28 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./certs/cert.pem:/usr/local/lib/python3.12/site-packages/src/certs/cert.pem:ro
+      - ./certs/ca.crt:/usr/local/lib/python3.12/site-packages/src/certs/ca.crt:ro
+      - ./certs/streamlit-client.key:/usr/local/lib/python3.12/site-packages/src/certs/streamlit-client.key:ro
+      - ./certs/streamlit-client.crt:/usr/local/lib/python3.12/site-packages/src/certs/streamlit-client.crt:ro
     environment:
       - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
       - CERT_FILE_PATH=${CERT_FILE_PATH}
+      - API_HOST=${API_HOST}
+      - PATH_CRT=${PATH_CRT}
+      - PATH_CRT_KEY=${PATH_CRT_KEY}
+      - STREAMLIT_SERVER_PORT=${STREAMLIT_SERVER_PORT}
+      - STREAMLIT_SERVER_ENABLE_CORS=${STREAMLIT_SERVER_ENABLE_CORS}
+      - STREAMLIT_SERVER_ENABLE_XSRF=${STREAMLIT_SERVER_ENABLE_XSRF}
+      - STREAMLIT_SERVER_SSL_CERT_FILE=${STREAMLIT_SERVER_SSL_CERT_FILE}
+      - STREAMLIT_SERVER_SSL_KEY_FILE=${STREAMLIT_SERVER_SSL_KEY_FILE}
+      - STREAMLIT_SERVER_HEADLESS=${STREAMLIT_SERVER_HEADLESS}
+      - STREAMLIT_SERVER_RUNNING_IN_HTTPS=${STREAMLIT_SERVER_RUNNING_IN_HTTPS}
   backend:
-    image: giodefa996/backend:0.0.1
+    image: giodefa996/backend:0.0.2
     container_name: backend-api
     expose:
       - "8000"
+    restart: always
     depends_on:
       - database
       - storage
@@ -43,10 +56,11 @@ services:
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       - backend
+      - frontend
     restart: always
     environment:
-      - BACKEND_HOST=backend
-      - BACKEND_PORT=8000
+      - BACKEND_HOST=${BACKEND_HOST}
+      - BACKEND_PORT=${BACKEND_PORT}
   database:
     image: postgres:latest
     environment:

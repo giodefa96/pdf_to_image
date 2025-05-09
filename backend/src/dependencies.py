@@ -4,10 +4,10 @@ from functools import lru_cache
 
 from fastapi import Depends
 from fastapi import Request
+from src.db.database import Database
 from src.repositories.pdf_repository import PdfRepository
 from src.services.pdf_service import PdfService
 from src.utils.blob_storage import AzureBlobManager
-from src.db.database import Database
 
 
 def setup_logging(log_level: str = "INFO") -> None:
@@ -38,14 +38,16 @@ def get_blob_storage(request: Request) -> AzureBlobManager:
     """Retrieve the blob storage instance from app state."""
     return request.app.state.blob_storage
 
+
 def get_db(request: Request) -> Database:
     """Retrieve the database instance from app state."""
     return request.app.state.db
 
 
 @lru_cache
-def get_pdf_repository(blob_storage: AzureBlobManager = Depends(get_blob_storage),
-                       db: Database = Depends(get_db)) -> PdfRepository:
+def get_pdf_repository(
+    blob_storage: AzureBlobManager = Depends(get_blob_storage), db: Database = Depends(get_db)
+) -> PdfRepository:
     """Create a singleton repository instance."""
     return PdfRepository(blob_storage=blob_storage, db=db)
 

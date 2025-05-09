@@ -9,7 +9,6 @@ from src.api.fe_api_pdf import convert_pdf_to_image
 from src.api.fe_api_pdf import get_status
 from src.utils.blob_storage import get_content_from_blob
 
-
 st.set_page_config(page_title="PDF Converter App", page_icon="📄", layout="wide", initial_sidebar_state="collapsed")
 
 st.markdown(
@@ -79,7 +78,7 @@ with st.container():
         processing_placeholder = st.empty()
         status_placeholder = st.empty()
         result_placeholder = st.empty()
-        
+
         filename = uploaded_file.name
 
         with processing_placeholder:
@@ -132,55 +131,55 @@ with st.container():
             status_placeholder.empty()
 
         if isinstance(response, list) and len(response) > 0:
-                st.markdown("---")
-                st.markdown(f"### 🖼️ Conversion results ({len(response)} pages)")
+            st.markdown("---")
+            st.markdown(f"### 🖼️ Conversion results ({len(response)} pages)")
 
-                zip_buffer = io.BytesIO()
-                with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                    for i, img in enumerate(response):
-                        img_data = img["image_data"]
-                        img_format = img["format"].lower()
-                        image_bytes = base64.b64decode(img_data)
-                        zip_file.writestr(f"page_{i + 1}.{img_format}", image_bytes)
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                for i, img in enumerate(response):
+                    img_data = img["image_data"]
+                    img_format = img["format"].lower()
+                    image_bytes = base64.b64decode(img_data)
+                    zip_file.writestr(f"page_{i + 1}.{img_format}", image_bytes)
 
-                zip_buffer.seek(0)
-                st.markdown('<div class="download-all-btn">', unsafe_allow_html=True)
-                st.download_button(
+            zip_buffer.seek(0)
+            st.markdown('<div class="download-all-btn">', unsafe_allow_html=True)
+            st.download_button(
                 label="📦 Download all pages (ZIP)",
                 data=zip_buffer,
                 file_name=f"{filename.split('.')[0]}_images.zip" if filename else "images.zip",
                 mime="application/zip",
                 use_container_width=True,
             )
-                st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-                tabs = st.tabs([f"Page {img['page']}" for img in response])
+            tabs = st.tabs([f"Page {img['page']}" for img in response])
 
-                for i, tab in enumerate(tabs):
-                    with tab:
-                        img_data = response[i]["image_data"]
-                        img_format = response[i]["format"].lower()
-                        image_bytes = base64.b64decode(img_data)
+            for i, tab in enumerate(tabs):
+                with tab:
+                    img_data = response[i]["image_data"]
+                    img_format = response[i]["format"].lower()
+                    image_bytes = base64.b64decode(img_data)
 
-                        col1, col2 = st.columns([3, 1])
-                        with col1:
-                            st.image(image_bytes, caption=f"Page {i + 1}", use_container_width=True)
-                        with col2:
-                            st.markdown(f"#### Page {i + 1} details")
-                            st.markdown(f"**Format**: {img_format.upper()}")
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        st.image(image_bytes, caption=f"Page {i + 1}", use_container_width=True)
+                    with col2:
+                        st.markdown(f"#### Page {i + 1} details")
+                        st.markdown(f"**Format**: {img_format.upper()}")
 
-                            # Image size
-                            image_size = round(len(image_bytes) / 1024, 2)  # KB
-                            st.markdown(f"**Size**: {image_size} KB")
+                        # Image size
+                        image_size = round(len(image_bytes) / 1024, 2)  # KB
+                        st.markdown(f"**Size**: {image_size} KB")
 
-                            st.markdown("#### Download")
-                            st.download_button(
-                                label=f"⬇️ Download page {i + 1}",
-                                data=image_bytes,
-                                file_name=f"page_{i + 1}.{img_format}",
-                                mime=f"image/{img_format}",
-                                use_container_width=True,
-                            )
+                        st.markdown("#### Download")
+                        st.download_button(
+                            label=f"⬇️ Download page {i + 1}",
+                            data=image_bytes,
+                            file_name=f"page_{i + 1}.{img_format}",
+                            mime=f"image/{img_format}",
+                            use_container_width=True,
+                        )
 
 
 # Footer

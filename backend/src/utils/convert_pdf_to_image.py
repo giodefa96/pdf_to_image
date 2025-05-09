@@ -1,11 +1,9 @@
 import base64
 import logging
-import os
 from io import BytesIO
 
 from pdf2image import convert_from_bytes
 from pdf2image.pdf2image import pdfinfo_from_bytes
-
 from src.config import Settings
 
 logger = logging.getLogger(__name__)
