@@ -1,11 +1,11 @@
 import logging
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter
+from fastapi import Depends
 from fastapi.responses import JSONResponse
-
-from src.services.chat_with_llm_service import ChatWithLLMService
 from src.dependencies import get_chat_with_llm_service
 from src.models.pydantic.request_model import ChatRequest
+from src.services.chat_with_llm_service import ChatWithLLMService
 
 logger = logging.getLogger(__name__)
 
@@ -50,10 +50,10 @@ async def chat_with_llm(
 
     except ValueError as e:
         # Handle validation errors (like invalid inputs)
-        logger.warning(f"Validation error in chat endpoint: {str(e)}")
+        logger.warning(f"Validation error in chat endpoint: {e!s}")
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
     except Exception as e:
         # Handle any other unexpected errors
-        logger.error(f"Error in chat endpoint: {str(e)}", exc_info=True)
+        logger.error(f"Error in chat endpoint: {e!s}", exc_info=True)
         return JSONResponse(content={"error": "An error occurred while processing your request"}, status_code=500)

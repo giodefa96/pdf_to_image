@@ -6,9 +6,9 @@ from fastapi import Depends
 from fastapi import Request
 from src.db.database import Database
 from src.repositories.pdf_repository import PdfRepository
+from src.services.chat_with_llm_service import ChatWithLLMService
 from src.services.pdf_service import PdfService
 from src.utils.blob_storage import AzureBlobManager
-from src.services.chat_with_llm_service import ChatWithLLMService
 
 
 def setup_logging(log_level: str = "INFO") -> None:

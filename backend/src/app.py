@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from src.db.database import Database
 from src.dependencies import setup_logging
-from src.routers import pdf_router, chat_with_llm_router
+from src.routers import chat_with_llm_router
+from src.routers import pdf_router
 from src.utils.blob_storage import AzureBlobManager
 
 setup_logging()

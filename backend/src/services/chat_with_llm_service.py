@@ -1,7 +1,7 @@
 import logging
 
-from src.config import Settings
 from mistralai import Mistral
+from src.config import Settings
 
 logger = logging.getLogger(__name__)
 
