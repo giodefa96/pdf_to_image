@@ -25,3 +25,5 @@ class Settings:
     POSTGRES_DB: str = os.getenv("POSTGRES_DB")
 
     PDF_BATCH_SIZE: int = int(os.getenv("PDF_BATCH_SIZE", 10))
+
+    MISTRAL_API_KEY: str = os.getenv("MISTRAL_API_KEY")

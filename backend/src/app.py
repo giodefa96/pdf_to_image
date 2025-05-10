@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from src.db.database import Database
 from src.dependencies import setup_logging
-from src.routers import pdf_router
+from src.routers import pdf_router, chat_with_llm_router
 from src.utils.blob_storage import AzureBlobManager
 
 setup_logging()
@@ -66,6 +66,10 @@ def create_app() -> FastAPI:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
     app.include_router(pdf_router.router, prefix="/api")
+    app.include_router(
+        chat_with_llm_router.router,
+        prefix="/api",
+    )
 
     logger.info("FastAPI application created and configured.")
 

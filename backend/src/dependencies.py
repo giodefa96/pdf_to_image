@@ -8,6 +8,7 @@ from src.db.database import Database
 from src.repositories.pdf_repository import PdfRepository
 from src.services.pdf_service import PdfService
 from src.utils.blob_storage import AzureBlobManager
+from src.services.chat_with_llm_service import ChatWithLLMService
 
 
 def setup_logging(log_level: str = "INFO") -> None:
@@ -56,3 +57,9 @@ def get_pdf_repository(
 def get_pdf_service(repository: PdfRepository = Depends(get_pdf_repository)) -> PdfService:
     """Create a singleton service instance."""
     return PdfService(repository)
+
+
+@lru_cache
+def get_chat_with_llm_service() -> ChatWithLLMService:
+    """Create a singleton service instance."""
+    return ChatWithLLMService()
