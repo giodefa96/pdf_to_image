@@ -4,13 +4,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from src.db.database import db
+from src.db.database import Database
 from src.dependencies import setup_logging
+from src.routers import chat_with_llm_router
 from src.routers import pdf_router
 from src.utils.blob_storage import AzureBlobManager
 
-logger = logging.getLogger()
+setup_logging()
+logger = logging.getLogger(__name__)
 blob_storage = AzureBlobManager()
+db = Database()
 
 
 @asynccontextmanager
@@ -34,6 +37,7 @@ async def lifespan(app: FastAPI) -> None:
     if success:
         logger.info("Azure Blob Storage initialized during application startup")
         app.state.blob_storage = blob_storage
+        app.state.db = db
     else:
         logger.warning("Azure Blob Storage initialization failed")
     yield
@@ -50,8 +54,6 @@ def create_app() -> FastAPI:
         FastAPI: Configured FastAPI application instance.
     """
 
-    setup_logging()
-
     app = FastAPI(title="FastAPI Template", version="0.0.1", lifespan=lifespan)
 
     # Configure CORS middleware
@@ -65,6 +67,10 @@ def create_app() -> FastAPI:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
     app.include_router(pdf_router.router, prefix="/api")
+    app.include_router(
+        chat_with_llm_router.router,
+        prefix="/api",
+    )
 
     logger.info("FastAPI application created and configured.")
 

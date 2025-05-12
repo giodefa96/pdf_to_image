@@ -23,4 +23,4 @@ class PdfDocument(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     def __repr__(self) -> str:
-        return f"<PdfDocument(hash_id='{self.hash_id}', blob_name='{self.blob_name}')>"
+        return f"<PdfDocument(hash_id='{self.hash_id}', blob_name='{self.blob_url}')>"

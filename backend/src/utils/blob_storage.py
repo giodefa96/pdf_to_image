@@ -1,8 +1,8 @@
 import logging
-import os
 
 from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob.aio import BlobServiceClient
+from src.config import Settings
 from src.models.pydantic.response_model import PdfBlobResponse
 
 logger = logging.getLogger(__name__)
@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 class AzureBlobManager:
     def __init__(self) -> None:
-        self.connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-        self.container_name = os.getenv("AZURE_STORAGE_CONTAINER_NAME")
+        self.connection_string = Settings.AZURE_STORAGE_CONNECTION_STRING
+        self.container_name = Settings.AZURE_STORAGE_CONTAINER_NAME
         self.blob_service_client = None
 
     async def initialize(self) -> bool:
