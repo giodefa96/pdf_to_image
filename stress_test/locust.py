@@ -1,3 +1,4 @@
+# https://localhost/api/convert-pdf-to-image/
 import os
 
 from locust import HttpUser
@@ -11,8 +12,8 @@ class PDFConverterUser(HttpUser):
 
     def on_start(self) -> None:
         # Path to your PDF file - update this with your actual PDF file path
-        pdf_path = os.path.join(os.path.dirname(__file__), r"data\test.pdf")
-
+        pdf_path = os.path.join(os.path.dirname(__file__), "data/test.pdf")
+        print(f"PDF path: {pdf_path}", flush=True)
         # Check if the file exists
         if not os.path.exists(pdf_path):
             raise StopUser()
@@ -33,7 +34,11 @@ class PDFConverterUser(HttpUser):
             files=files,
             name="Convert PDF to Image",
             catch_response=True,
-            verify=False,
+            verify="/Users/melaniablandi/code/pdf_to_image/stress_test/certs/ca.crt",
+            cert=(
+                "/Users/melaniablandi/code/pdf_to_image/stress_test/certs/streamlit-client.crt",
+                "/Users/melaniablandi/code/pdf_to_image/stress_test/certs/streamlit-client.key",
+            ),
         ) as response:
             if response.status_code == 200:
                 response.success()

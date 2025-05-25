@@ -1,0 +1,8 @@
+[package]
+name = "pdf-to-images"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+azure_storage = "0.21.0"
+pdf2image = "0.1.3"

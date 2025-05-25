@@ -35,7 +35,7 @@ class PdfRepository:
                 host_name=pdf_blob_response.host_name,
             )
             session.add(pdf_document)
-            return pdf_document
+        return pdf_document
 
     async def get_pdf_blob_storage_url_by_hash(self, hash_id: str) -> PdfResponse:
         """
@@ -51,9 +51,9 @@ class PdfRepository:
         async with self.db.get_session() as session:
             result = await session.execute(select(PdfDocument).where(PdfDocument.hash_id == hash_id))
             pdf_document = result.scalars().first()
-            if pdf_document:
-                return PdfResponse.success(hash_id=pdf_document.hash_id, blob_url=pdf_document.blob_url)
-            return PdfResponse.not_found(hash_id=hash_id)
+        if pdf_document:
+            return PdfResponse.success(hash_id=pdf_document.hash_id, blob_url=pdf_document.blob_url)
+        return PdfResponse.not_found(hash_id=hash_id)
 
     async def get_image_from_blob_storage_by_name(self, blob_url: str) -> list[dict[str, str]]:
         """
