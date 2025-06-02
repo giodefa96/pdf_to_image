@@ -9,6 +9,7 @@ from src.repositories.pdf_repository import PdfRepository
 from src.services.chat_with_llm_service import ChatWithLLMService
 from src.services.pdf_service import PdfService
 from src.utils.blob_storage import AzureBlobManager
+from src.utils.azure_queue import AzureQueueManager
 
 
 def setup_logging(log_level: str = "INFO") -> None:
@@ -39,6 +40,10 @@ def get_blob_storage(request: Request) -> AzureBlobManager:
     """Retrieve the blob storage instance from app state."""
     return request.app.state.blob_storage
 
+def get_blob_queue(request: Request) -> AzureQueueManager:
+    """Retrieve the blob queue instance from app state."""
+    return request.app.state.azure_queue
+
 
 def get_db(request: Request) -> Database:
     """Retrieve the database instance from app state."""
@@ -47,10 +52,10 @@ def get_db(request: Request) -> Database:
 
 @lru_cache
 def get_pdf_repository(
-    blob_storage: AzureBlobManager = Depends(get_blob_storage), db: Database = Depends(get_db)
+    blob_storage: AzureBlobManager = Depends(get_blob_storage), azure_queue: AzureQueueManager = Depends(get_blob_queue), db: Database = Depends(get_db)
 ) -> PdfRepository:
     """Create a singleton repository instance."""
-    return PdfRepository(blob_storage=blob_storage, db=db)
+    return PdfRepository(blob_storage=blob_storage, azure_queue=azure_queue, db=db)
 
 
 @lru_cache

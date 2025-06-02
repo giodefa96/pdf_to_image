@@ -1,19 +1,22 @@
 import json
 import logging
 
+from src.models.pydantic.request_model import AzureQueueRequest, TaskData
 from sqlalchemy import select
 from src.db.database import Database
 from src.models.db.pdf_document import PdfDocument
 from src.models.pydantic.response_model import PdfBlobResponse
 from src.models.pydantic.response_model import PdfResponse
 from src.utils.blob_storage import AzureBlobManager
+from src.utils.azure_queue import AzureQueueManager
 
 logger = logging.getLogger(__name__)
 
 
 class PdfRepository:
-    def __init__(self, blob_storage: AzureBlobManager, db: Database) -> None:
+    def __init__(self, blob_storage: AzureBlobManager, azure_queue: AzureQueueManager, db: Database) -> None:
         self.blob_storage = blob_storage
+        self.azure_queue = azure_queue
         self.db = db
 
     async def save_pdf_document_hash(self, pdf_blob_response: PdfBlobResponse) -> PdfDocument | None:
@@ -29,10 +32,12 @@ class PdfRepository:
         logger.info("Saving PDF document hash to the database.")
         async with self.db.transaction() as session:
             pdf_document = PdfDocument(
-                hash_id=pdf_blob_response.blob_name,
+                hash_id=pdf_blob_response.hash_id,
+                pdf_hash_id=pdf_blob_response.blob_name,
                 blob_url=pdf_blob_response.blob_url,
                 container_name=pdf_blob_response.container_name,
                 host_name=pdf_blob_response.host_name,
+                status=pdf_blob_response.status,
             )
             session.add(pdf_document)
         return pdf_document
@@ -52,7 +57,7 @@ class PdfRepository:
             result = await session.execute(select(PdfDocument).where(PdfDocument.hash_id == hash_id))
             pdf_document = result.scalars().first()
         if pdf_document:
-            return PdfResponse.success(hash_id=pdf_document.hash_id, blob_url=pdf_document.blob_url)
+            return PdfResponse.success(hash_id=pdf_document.hash_id, status=pdf_document.status, blob_url=pdf_document.blob_url)
         return PdfResponse.not_found(hash_id=hash_id)
 
     async def get_image_from_blob_storage_by_name(self, blob_url: str) -> list[dict[str, str]]:
@@ -83,3 +88,29 @@ class PdfRepository:
         logger.info("Saving image data to blob storage.")
         json_dumped = json.dumps(image_data).encode("utf-8")
         return await self.blob_storage.upload_file(json_dumped, blob_name)
+
+    async def save_pdf_to_azure_storage(self, pdf_content: bytes, blob_name: str) -> PdfBlobResponse:
+        """
+        Save the PDF content to Azure Blob Storage.
+
+        Args:
+            pdf_content (bytes): The content of the PDF file.
+
+        Returns:
+            PdfBlobResponse: Response object containing information about the saved blob.
+        """
+        logger.info("Saving PDF content to Azure Blob Storage.")
+        return await self.blob_storage.upload_file(pdf_content, blob_name)
+    
+    def push_task_on_queue(self, task_data: AzureQueueRequest) -> bool:
+        """
+        Push a task to the Azure Queue.
+
+        Args:
+            task_data (AzureQueueRequest): The data of the task to push.
+
+        Returns:
+            bool: True if the task was pushed successfully, False otherwise.
+        """
+        logger.info("Pushing task to Azure Queue.")
+        return self.azure_queue.send_task(task_data)

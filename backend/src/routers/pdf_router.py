@@ -90,12 +90,12 @@ async def post_pdf(
             return JSONResponse(
                 content={
                     "message": "File already exists in cache",
-                    "status": "already_exists",
+                    "status": pdf_cache_information.status,
                     "filename": pdf_cache_information.hash_id,
                 },
                 status_code=200,
             )
-
+        await pdf_service.push_task_to_queue(contents)
         background_tasks.add_task(pdf_service.process_pdf_conversion, contents)
 
         return JSONResponse(
@@ -143,7 +143,7 @@ async def get_task_status(
                 content={
                     "message": "Task not found",
                     "status": status_response.status,
-                    "hash_id": status_response.hash_id,
+                    "hash_id": status_response.pdf_hash_id,
                 },
                 status_code=202,
             )

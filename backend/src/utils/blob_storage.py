@@ -77,13 +77,15 @@ class AzureBlobManager:
         Returns:
             str: URL of the uploaded blob
         """
-        blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=file_name)
+        blob_client = self.blob_service_client.get_blob_client(container=self.container_name, blob=f"{file_name}_pdf")
         await blob_client.upload_blob(file, overwrite=True)
         logger.info("Blob '%s' uploaded successfully.", file_name)
         return PdfBlobResponse.success(
-            blob_client.primary_endpoint,
-            blob_client.primary_hostname,
-            blob_client.container_name,
-            blob_client.account_name,
-            blob_client.blob_name,
+            hash_id=file_name,
+            blob_url=blob_client.primary_endpoint,
+            host_name=blob_client.primary_hostname,
+            container_name=blob_client.container_name,
+            account_name=blob_client.account_name,
+            blob_name=blob_client.blob_name,
+            status="pending"
         )

@@ -1,6 +1,7 @@
 import asyncio
 import hashlib
 
+from src.models.pydantic.request_model import AzureQueueRequest, TaskData
 from src.models.pydantic.response_model import PdfBlobResponse
 from src.models.pydantic.response_model import PdfResponse
 from src.models.pydantic.response_model import StatusResponse
@@ -66,6 +67,31 @@ class PdfService:
         """
         await self.pdf_repository.save_pdf_document_hash(pdf_blob_response)
 
+    async def push_task_to_queue(self, file: bytes) -> None:
+        """
+        Push the PDF conversion task to the background queue.
+
+        Args:
+            file (bytes): The content of the PDF file.
+        """
+        pdf_content: bytes = file
+        cache_entry: PdfResponse = await self.check_cache(pdf_content)
+        pdf_blob_response: PdfBlobResponse = await self.pdf_repository.save_pdf_to_azure_storage(pdf_content, cache_entry.hash_id)
+        task_request = AzureQueueRequest(task_type="pdf_conversion",
+                                    data=TaskData(
+                                        pdf_azure_storage_url=pdf_blob_response.blob_name,
+                                        hash_id=pdf_blob_response.hash_id,
+                                        output_format="png",
+                                        quality=95
+                                    )
+                                    ).model_dump()
+        push_task_to_queue: bool = self.pdf_repository.push_task_on_queue(task_request) 
+        if not push_task_to_queue:
+            raise Exception("Failed to push task to queue")
+        await self.save_pdf_hash(pdf_blob_response)
+        
+        
+    
     async def process_pdf_conversion(self, file: bytes) -> None:
         """
         Process the PDF conversion in the background.

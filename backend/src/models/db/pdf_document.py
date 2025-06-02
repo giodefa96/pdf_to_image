@@ -15,10 +15,12 @@ class PdfDocument(Base):
     __tablename__ = "pdf_documents"
 
     hash_id = Column(String(64), primary_key=True, index=True)
+    pdf_hash_id = Column(String(68), nullable=False, index=True)
     blob_url = Column(String(2000), nullable=False)
     container_name = Column(String(100), nullable=False)
     host_name = Column(String(255), nullable=False)
     is_active = Column(Boolean, server_default=expression.true(), nullable=False)
+    status = Column(String(50), nullable=False)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 

@@ -9,10 +9,12 @@ from src.dependencies import setup_logging
 from src.routers import chat_with_llm_router
 from src.routers import pdf_router
 from src.utils.blob_storage import AzureBlobManager
+from src.utils.azure_queue import AzureQueueManager
 
 setup_logging()
 logger = logging.getLogger(__name__)
 blob_storage = AzureBlobManager()
+azure_queue = AzureQueueManager()
 db = Database()
 
 
@@ -33,9 +35,10 @@ async def lifespan(app: FastAPI) -> None:
     await db.initialize()
     await db.create_tables()
     logger.info("Database initialized during application startup")
-    success = await blob_storage.initialize()
+    success = await blob_storage.initialize() and azure_queue.initialize()
     if success:
-        logger.info("Azure Blob Storage initialized during application startup")
+        logger.info("Azure Blob Storage and Queue initialized successfully")
+        app.state.azure_queue = azure_queue
         app.state.blob_storage = blob_storage
         app.state.db = db
     else:
