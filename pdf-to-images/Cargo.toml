@@ -4,5 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-azure_storage = "0.21.0"
+tokio = { version = "1.0", features = ["full"] }
+dotenv = "0.15"
+azure_storage = "0.19"
+azure_storage_queues = "0.19"
+azure_core = "0.19"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
 pdf2image = "0.1.3"
